@@ -3,7 +3,7 @@ segment .data
 sem_espaco              db  "nao foi possivel carregar o programa na memoria, nao há espaco", 0ah, 0
 SEM_ESPACO_SIZE         EQU $-sem_espaco
 
-programa_carregado      db  "o programa foi carregado nos seguintes par(es) <endereco_inicial> <endereco_final>", 0ah, 0
+programa_carregado      db  "o programa foi carregado no(s) seguinte(s) par(es) <endereco_inicial> <endereco_final>", 0ah, 0
 PROGRAMA_CARREGADO_S    EQU $-programa_carregado
 
 espaco                  db  " ", 0
@@ -43,19 +43,32 @@ f1:
     cmp [EBP + 8], eax ;compara com tamanho do programa
     jg .nao_cabe
 
+
     mov esi, 0
     mov ecx, [EBP + 12] ;numero de pares
+    call mostrar_msg_carregado
+    mov eax, [EBP + 8] ;tamanho do programa
+    ;faz isso (numero_de_pares_vezes):
+    .dividido:
+        mov ebx,[EBP + 8*esi + 16]  ;endereco inicial
+        ;mostrar inicial
+        mov edx, [EBP + 8*esi + 20] ;tamanho de memoria
+        
+        push eax
 
-
-    .mostra:
-        ;mostra endereco
-        mov eax, [EBP + 8*esi + 16]
+        mov eax, ebx
         mov edi, buffer
         call int_to_str
         push dword buffer
         push dword BUFFER_SIZE
         call print
         add esp, 8      ; esquece numero mostrado 
+
+        pop eax
+
+        cmp eax, edx 
+        jb .menor_que_o_bloco   ;ultimo bloco de memoria
+        
 
         call clear_buffer
         ;mostra espaco
@@ -63,31 +76,34 @@ f1:
         push dword ESPACO_S
         call print
         add esp, 8      ; esquece valor mostrado 
+        
+        push eax
+        push edx
+        dec edx
 
-        ;mostra memoria disponivel
-        mov eax, [EBP + 8*esi + 20]
+        add ebx, edx
+        ;mostrar end final
+        mov eax, ebx
         mov edi, buffer
         call int_to_str
         push dword buffer
         push dword BUFFER_SIZE
         call print
-        add esp, 8      ; esquece numero mostrado 
-
-        call clear_buffer
-        ;mostra espaco
-        push dword espaco
-        push dword ESPACO_S
-        call print
-        add esp, 8      ; esquece valor mostrado
+        add esp, 8
+        ;nwln
         push dword nwln
         push dword NWLN_S
         call print
         add esp, 8
-
         inc esi
-        
-        loop .mostra
 
+        pop edx
+        pop eax
+        
+        sub eax, edx
+        
+        loop .dividido
+        
     
     .iguais:
         call mostrar_msg_carregado
@@ -132,19 +148,48 @@ f1:
         push dword SEM_ESPACO_SIZE
         call print
         add esp, 8  
+        jmp .return
     
+    .menor_que_o_bloco:
+        
+
+        call clear_buffer
+        ;mostra espaco
+        push dword espaco
+        push dword ESPACO_S
+        call print
+        add esp, 8      ; esquece valor mostrado 
+
+        dec eax
+        add ebx, eax
+        ;mostrar end final
+        mov eax, ebx
+        mov edi, buffer
+        call int_to_str
+        push dword buffer
+        push dword BUFFER_SIZE
+        call print
+        add esp, 8
+        ;nwln
+        push dword nwln
+        push dword NWLN_S
+        call print
+        add esp, 8
+
     .return:
         leave
         ret
 
 clear_buffer:
     enter 0,0
+    push eax
     push ecx
     mov ecx, BUFFER_SIZE  ; Número de bytes a limpar
     mov edi, buffer       ; Aponta para o início do buffer
-     mov al, 0          ; Define o valor de limpeza como `0`
+    mov al, 0          ; Define o valor de limpeza como `0`
     rep stosb             ; Limpa todo o buffer
     pop ecx
+    pop eax
     leave
     ret
    
@@ -215,6 +260,7 @@ int_to_str:
         pop edx
         pop ecx
         pop ebx
+        
         ret
 
 mostrar_msg_carregado:

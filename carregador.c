@@ -10,7 +10,7 @@ int main (int argc, char *argv[]){
 
     extern void f1(int program_length, int n_peers, ...);
 
-    if (argc < 4 || (argc - 2)%2 != 0) {
+    if (argc < 4 || (argc - 2)%2 != 0 || argc > 10) {
         printf("Para rodar, use ./carregador <tamanho_progra> <endereco> <espaco livre>\n");
         printf("Para até 4 pares <endereco> <espaco livre> \n");
         return 1;
