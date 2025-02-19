@@ -18,8 +18,6 @@ Para compilar o programa, siga os seguintes passos:
    ```bash
    gcc -m32 -o carregador carregador.c loader_counter.o -no-pie
    ```
-   - **`-m32`**: Garante que o programa seja compilado em **32 bits**, compatível com o **NASM ELF**.
-   - **`-no-pie`**: Evita warnings de endereço relativo no Assembly.
 
 ### **Execução**
 O programa deve ser executado passando argumentos na linha de comando:
@@ -52,9 +50,10 @@ O programa pode retornar **três cenários diferentes**:
 3. **O programa precisa ser dividido**: Se for necessário distribuir o programa em múltiplos blocos de memória, a saída será semelhante a:
    ```
    o programa foi carregado nos seguintes par(es) <endereco_inicial> <endereco_final>
-   100 500
-   4000 4300
-   20000 20125
+   100 499
+   4000 4299
+   20000 20124
+   30000 30224
    ```
    Cada linha indica um **endereço inicial** e um **endereço final** onde o programa foi alocado.
 
@@ -66,7 +65,6 @@ O projeto é composto pelos seguintes arquivos:
 - **`README.md`**: Este arquivo com as instruções de uso.
 
 ## Observações Técnicas
-- O Assembly **usa registradores** para manipular os endereços e tamanhos.
 - A lógica principal está na função `f1` dentro do Assembly.
 - O programa **calcula se há memória suficiente** e decide **onde carregar o programa**.
 - A flag `-m32` é **obrigatória** pois o Assembly está escrito para arquitetura **x86 de 32 bits**.
@@ -75,6 +73,5 @@ O projeto é composto pelos seguintes arquivos:
 ## Autoria
 Desenvolvido como parte de um projeto de **Sistemas de Software Básico**. Para dúvidas ou sugestões, abra uma issue no repositório.
 
----
-📌 **Agora, seu programa tem um README pronto para o GitHub!** 🚀
+
 
