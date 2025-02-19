@@ -45,6 +45,7 @@ O programa pode retornar **três cenários diferentes**:
 2. **O programa cabe em um único bloco**: Se o programa couber em um único par `<endereco> <tamanho_memoria_disponivel>`, será exibido:
    ```
    o programa foi carregado no(s) seguinte(s) par(es) <endereco_inicial> <endereco_final>
+   100 124
    ```
 
 3. **O programa precisa ser dividido**: Se for necessário distribuir o programa em múltiplos blocos de memória, a saída será semelhante a:
